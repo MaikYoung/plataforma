@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
 
+from mailing.serializer import MailingSerializer
+
 
 class Mailing(APIView):
     permission_classes = []
@@ -20,16 +22,22 @@ class Mailing(APIView):
                     {3}
                     """.format(
                 request.data["name"], request.data["number"], request.data["address"], request.data["text"])
-            send_mail(
-                'Contacto web emiliadiaz.com',
-                text,
-                'info@emiliadiaz.com',
-                ['emiliadiaz@emiliadiaz.com'],
-                fail_silently=False,
-            )
-            return JsonResponse({"Success": is_valid[1]}, safe=True, status=status.HTTP_200_OK)
+            try:
+                send_mail(
+                    'Contacto web emiliadiaz.com',
+                    text,
+                    'info@emiliadiaz.com',
+                    ['emiliadiaz@emiliadiaz.com'],
+                    fail_silently=False,
+                )
+                serializer = MailingSerializer(request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse({"Success": is_valid[1]}, safe=False, status=status.HTTP_200_OK)
+            except Exception as e:
+                return JsonResponse({"Error en el mail": "{0}".format(e)}, safe=False, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return JsonResponse({"Error": is_valid[1]}, safe=True, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"Error": is_valid[1]}, safe=False, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Validate:
