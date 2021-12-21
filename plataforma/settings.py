@@ -25,7 +25,7 @@ SECRET_KEY = 'u97j=ktmz8n_#7qke+&*5a9tt-iyou&g9t*t+daz-s(f2k4@%w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -130,3 +130,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'email-smtp.eu-central-1.amazonaws.com'
+DEFAULT_FROM_EMAIL = 'no_reply@emiliadiaz.com'
+EMAIL_HOST_USER = 'AKIA2XN6OBWAVBX4SYI5'
+EMAIL_HOST_PASSWORD = 'BIlZPslFtUAbrLB0ANIHBXQOTkjkVW9vfb7Az8eCKbrH'
+EMAIL_PORT = 587
