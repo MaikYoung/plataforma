@@ -12,6 +12,7 @@ class Mailing(APIView):
     authentication_classes = []
 
     def post(self, request):
+        exit()
         is_valid = Validate(request.data).validate_body()
         if is_valid[0]:
             text = """
@@ -30,12 +31,16 @@ class Mailing(APIView):
                     ['emiliadiaz@emiliadiaz.com'],
                     fail_silently=False,
                 )
-                serializer = MailingSerializer(request.data)
-                if serializer.is_valid():
+                serializer = MailingSerializer(data=request.data)
+                if serializer.is_valid(raise_exception=True):
                     serializer.save()
                     return JsonResponse({"Success": is_valid[1]}, safe=False, status=status.HTTP_200_OK)
             except Exception as e:
-                return JsonResponse({"Error en el mail": "{0}".format(e)}, safe=False, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse(
+                    {"Error en el mail": "{0}".format(e)},
+                    safe=False,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
         else:
             return JsonResponse({"Error": is_valid[1]}, safe=False, status=status.HTTP_400_BAD_REQUEST)
 
@@ -43,7 +48,7 @@ class Mailing(APIView):
 class Validate:
     def __init__(self, data):
         self.body = data
-        self.keys_list = ["name", "number", "address", "text"]
+        self.keys_list = ["name", "number", "address", "text", "lopd_check"]
 
     def validate_body(self):
         for key in self.keys_list:
@@ -51,4 +56,7 @@ class Validate:
                 return False, "Missing key in form, {0}".format(key)
             if self.body[key] is None or self.body[key] == "":
                 return False, "El campo {0}, no puede ir vacío".format(key)
+            if key == "lopd_check":
+                if self.body[key] is False or self.body[key] is None:
+                    return False, "Acepta la política de privacidad y condiciones de uso"
         return True, "Success"
