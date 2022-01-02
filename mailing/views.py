@@ -3,7 +3,6 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
-
 from mailing.serializer import MailingSerializer
 
 
@@ -12,7 +11,6 @@ class Mailing(APIView):
     authentication_classes = []
 
     def post(self, request):
-        exit()
         is_valid = Validate(request.data).validate_body()
         if is_valid[0]:
             text = """
@@ -28,7 +26,7 @@ class Mailing(APIView):
                     'Contacto web emiliadiaz.com',
                     text,
                     'info@emiliadiaz.com',
-                    ['emiliadiaz@emiliadiaz.com'],
+                    ['emiliadiaz@emiliadiaz.com', 'michael@emiliadiaz.com'],
                     fail_silently=False,
                 )
                 serializer = MailingSerializer(data=request.data)
